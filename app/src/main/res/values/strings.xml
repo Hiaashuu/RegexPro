@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Regex Pro</string>
-    
+    <string name="enter_smali_code">Enter Smali code</string>
+    <string name="clear_screen">Clear Text</string>
+    <string name="paste_from_clipboard">Paste Text</string>
+    <string name="generated_regex">Generated Regex</string>
+    <string name="copy_regex">Copy Regex</string>
+
 </resources>

@@ -1,18 +1,16 @@
 package com.regex.modd3r;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Build;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -22,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,21 +29,20 @@ public class MainActivity extends AppCompatActivity {
     private EditText smaliInput;
     private EditText regexOutput;
     private ClipboardManager clipboardManager;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private Runnable longPressRunnable;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // Set the status bar color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(Color.parseColor("#121212")); // Status bar color set to #121212
-        }
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(Color.parseColor("#121212")); // Status bar color set to #121212
 
         // Display a toast message when the app starts
         Toast.makeText(this, "MODD3R", Toast.LENGTH_SHORT).show();
@@ -57,26 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
         clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-        pasteClipboardButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					pasteFromClipboard();
-				}
-			});
+        pasteClipboardButton.setOnClickListener(v -> pasteFromClipboard());
 
-        clearScreenButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					clearScreen();
-				}
-			});
+        clearScreenButton.setOnClickListener(v -> clearScreen());
 
-        copyRegexButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					copyToClipboard(regexOutput.getText().toString());
-				}
-			});
+        copyRegexButton.setOnClickListener(v -> copyToClipboard(regexOutput.getText().toString()));
 
         // Add a TextWatcher to update the regex in real time
         smaliInput.addTextChangedListener(new TextWatcher() {
@@ -123,50 +106,34 @@ public class MainActivity extends AppCompatActivity {
         imm.showSoftInput(smaliInput, InputMethodManager.SHOW_IMPLICIT);
 
         // Add touch listener to the clearScreenButton to copy input text to clipboard after 2 seconds
-        clearScreenButton.setOnTouchListener(new View.OnTouchListener() {
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					switch (event.getAction()) {
-						case MotionEvent.ACTION_DOWN:
-							longPressRunnable = new Runnable() {
-								@Override
-								public void run() {
-									copyToClipboard(smaliInput.getText().toString());
-								}
-							};
-							handler.postDelayed(longPressRunnable, 2000); // Adjusted to 2 seconds
-							break;
-						case MotionEvent.ACTION_UP:
-						case MotionEvent.ACTION_CANCEL:
-							handler.removeCallbacks(longPressRunnable);
-							break;
-					}
-					return false; // Return false to allow other touch events like clearing the screen
-				}
-			});
+        clearScreenButton.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    longPressRunnable = () -> copyToClipboard(smaliInput.getText().toString());
+                    handler.postDelayed(longPressRunnable, 2000); // Adjusted to 2 seconds
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    handler.removeCallbacks(longPressRunnable);
+                    break;
+            }
+            return false; // Return false to allow other touch events like clearing the screen
+        });
 
         // Add long press listener to the copyRegexButton to show a toast message
-        copyRegexButton.setOnTouchListener(new View.OnTouchListener() {
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					switch (event.getAction()) {
-						case MotionEvent.ACTION_DOWN:
-							longPressRunnable = new Runnable() {
-								@Override
-								public void run() {
-									Toast.makeText(MainActivity.this, "MODD3R", Toast.LENGTH_SHORT).show();
-								}
-							};
-							handler.postDelayed(longPressRunnable, 2000); // Adjusted to 2 seconds
-							break;
-						case MotionEvent.ACTION_UP:
-						case MotionEvent.ACTION_CANCEL:
-							handler.removeCallbacks(longPressRunnable);
-							break;
-					}
-					return false; // Return false to allow other touch events
-				}
-			});
+        copyRegexButton.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    longPressRunnable = () -> Toast.makeText(MainActivity.this, "MODD3R", Toast.LENGTH_SHORT).show();
+                    handler.postDelayed(longPressRunnable, 2000); // Adjusted to 2 seconds
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    handler.removeCallbacks(longPressRunnable);
+                    break;
+            }
+            return false; // Return false to allow other touch events
+        });
     }
 
     private void pasteFromClipboard() {
@@ -328,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
         int lastMatchEnd = 0;
         while (matcher.find()) {
             result.append(input, lastMatchEnd, matcher.start());
-            result.append("(").append(Pattern.quote(matcher.group(1))).append(")+");
+            result.append("(").append(Pattern.quote(Objects.requireNonNull(matcher.group(1)))).append(")+");
             lastMatchEnd = matcher.end();
         }
         result.append(input.substring(lastMatchEnd));

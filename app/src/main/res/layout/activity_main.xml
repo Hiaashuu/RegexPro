@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,42 +13,50 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:hint="Enter Smali code"
+        android:autofillHints=""
+        android:hint="@string/enter_smali_code"
         android:inputType="textMultiLine"
         android:gravity="top"
         android:scrollbars="vertical"
         android:background="@drawable/edittext_background"
         android:padding="10dp"
         android:layout_marginBottom="8dp"
-        style="@style/DarkEditText" />
+        style="@style/DarkEditText"
+        tools:ignore="VisualLintTextFieldSize" />
 
     <!-- Buttons for Clear Screen and Paste from Clipboard, arranged horizontally -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal">
 
         <!-- Clear Screen button -->
         <Button
             android:id="@+id/clearScreenButton"
+            style="@style/DarkButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:text="Clear Screen"
             android:padding="12dp"
-            style="@style/DarkButton" />
+            android:textSize="16sp"
+            android:text="@string/clear_screen"
+            tools:ignore="TextContrastCheck,VisualLintButtonSize" />
 
         <!-- Paste from Clipboard button -->
         <Button
             android:id="@+id/pasteClipboardButton"
+            style="@style/DarkButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Paste from Clipboard"
             android:padding="12dp"
-            style="@style/DarkButton" />
+            android:textSize="16sp"
+            android:text="@string/paste_from_clipboard"
+            tools:ignore="TextContrastCheck,VisualLintButtonSize,VisualLintBounds" />
 
     </LinearLayout>
 
@@ -57,7 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:hint="Generated Regex"
+        android:hint="@string/generated_regex"
         android:inputType="textMultiLine"
         android:gravity="top"
         android:scrollbars="vertical"
@@ -66,15 +75,18 @@
         android:layout_marginBottom="8dp"
         android:focusable="false"
         android:clickable="false"
-        style="@style/DarkEditText" />
+        style="@style/DarkEditText"
+        tools:ignore="Autofill,VisualLintTextFieldSize" />
 
     <!-- Copy Regex button -->
     <Button
         android:id="@+id/copyRegexButton"
+        style="@style/DarkButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Copy Regex"
         android:padding="12dp"
-        style="@style/DarkButton" />
+        android:textSize="16sp"
+        android:text="@string/copy_regex"
+        tools:ignore="TextContrastCheck,VisualLintButtonSize" />
 
 </LinearLayout>
